@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0.0",
+  "job": "a08",
+  "working_directory": "coze-studio",
+  "toolchain": {
+    "go": "1.24",
+    "node": "22.23.2",
+    "package_manager": "Rush"
+  },
+  "commands": {
+    "minimal_build": [
+      "bash",
+      "-lc",
+      "cd backend && go build ./... && cd .. && node common/scripts/install-run-rush.js install --to @coze-studio/app && node common/scripts/install-run-rush.js rebuild --to @coze-studio/app --verbose"
+    ],
+    "test": [
+      "bash",
+      "-lc",
+      "cd backend && go test ./... && cd .. && node common/scripts/install-run-rush.js install --to @coze-studio/app && node common/scripts/install-run-rush.js test --to @coze-studio/app --verbose"
+    ],
+    "health": [
+      "bash",
+      "-lc",
+      "cd backend && go test ./api/router -run ^TestHealthz$ -count=1"
+    ]
+  },
+  "health_probe": {
+    "type": "in_process",
+    "test": "TestHealthz",
+    "endpoint": "/healthz",
+    "expected_status": 200,
+    "expected_body": "ok"
+  },
+  "artifacts": {
+    "minimal_build": [
+      "backend compilation",
+      "frontend/apps/coze-studio/dist"
+    ],
+    "test": [
+      "Go test result",
+      "@coze-studio/app test result"
+    ],
+    "health": [
+      "TestHealthz result"
+    ]
+  }
+}
